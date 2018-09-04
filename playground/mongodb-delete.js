@@ -20,7 +20,7 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp',{useNewUrlParser: true},
 
   db.collection('Todos').findOneAndDelete({completed: false}).then((result) => {
     console.log(result);
-  }); // the difference between this method andh deleteOne is that this returns the object that was deleted 
+  }); // the difference between this method andh deleteOne is that this returns the object that was deleted.
 
 
 
