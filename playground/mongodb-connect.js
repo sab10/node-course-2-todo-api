@@ -2,7 +2,7 @@
 
 const {MongoClient, ObjectID} = require('mongodb');
 
-//var obj = new ObjectID(); // this is an example of how works destructuring
+//var obj = new ObjectID(); 
 //console.log(obj);
 
 //const user = {name: 'Sabin', age : 20};
