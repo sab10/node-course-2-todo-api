@@ -5,6 +5,8 @@ var {mongoose} = require('./db/mongoose.js');
 var {Todo} = require('./models/todo.js');
 var {User} = require('./models/user.js');
 
+const port = process.env.PORT || 3000;
+
 //var newTodo = new Todo({
 //  text : 'Node project',
 //});
@@ -40,11 +42,14 @@ app.post('/todos', (req, res) => {
 
   todo.save().then((doc) => {
     res.send(doc);
-  }, (err) => {
+  }, (e) => {
     res.status(400).send(e);
   });
 });
 
-app.listen(3000, () => {
-  console.log('Started to listen');
-})
+app.listen(port, () => {
+  console.log('Started to listen on port ',port);
+});
+
+
+module.exports = {app};
