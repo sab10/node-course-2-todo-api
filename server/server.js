@@ -5,6 +5,8 @@ var {mongoose} = require('./db/mongoose.js');
 var {Todo} = require('./models/todo.js');
 var {User} = require('./models/user.js');
 
+const {ObjectID} = require('mongodb');
+
 const port = process.env.PORT || 3000;
 
 //var newTodo = new Todo({
@@ -54,6 +56,29 @@ app.get('/todos', (req, res) => {
     res.status(400).send(e);
   });
 });
+
+app.get('/todos/:id', (req, res) => {
+  var id = req.params.id;
+
+  if(!ObjectID.isValid(id)){
+    res.status(404).send();
+  }
+  Todo.findById(id).then((todo) => {
+    if(todo){
+      res.send(todo);
+    }
+    res.status(404).send();
+  }, (e) => {
+    res.status(400).send();
+  })
+
+
+  //res.send(req.params);  // this command send back the id wrote in the link
+});
+
+app.get('/file', (req, res) => {
+  res.download(__dirname+'/cazzeggio.txt'); // the download doesn't work if 1. the file is without something in it 2. if the file is in the path before che one where I am executing server.js for security issues
+})
 
 app.listen(port, () => {
   console.log('Started to listen on port ',port);
