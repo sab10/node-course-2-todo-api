@@ -1,4 +1,6 @@
-var express = require('express');
+const _ = require('lodash');
+
+var express = require('express'); // In this cases I can use const or var is the same
 var bodyParser = require('body-parser');
 
 var {mongoose} = require('./db/mongoose.js');
@@ -44,17 +46,17 @@ app.post('/todos', (req, res) => {
 
   todo.save().then((doc) => {
     res.send(doc);
-  }, (e) => {
+  }).catch((e) => {
     res.status(400).send(e);
-  });
+  }) ;
 });
 
 app.get('/todos', (req, res) => {
   Todo.find().then((todos) => {
     res.send({todos});
-  }, (e) => {
+  }).catch((e) => {
     res.status(400).send(e);
-  });
+  }) ;
 });
 
 app.get('/todos/:id', (req, res) => {
@@ -65,14 +67,53 @@ app.get('/todos/:id', (req, res) => {
   }
   Todo.findById(id).then((todo) => {
     if(todo){
-      res.send(todo);
+      res.send({todo});
     }
     res.status(404).send();
-  }, (e) => {
-    res.status(400).send();
-  })
-
+  }).catch((e) => {
+    res.status(400).send(e);
+  }) ;
   //res.send(req.params);  // this command send back the id wrote in the link
+});
+
+app.delete('/todos/:id', (req, res) => {
+  var id = req.params.id;
+
+  if(!ObjectID.isValid(id))
+    res.status(404).send('Id not valid');
+
+  Todo.findByIdAndDelete(id).then((todo) => {
+    if(!todo)
+      res.status(400).send('This is not an error, there is not a doc with that ID');
+
+    res.send({todo});
+  }).catch((e) => {
+    res.status(400).send(e);
+  }) ;
+});
+
+app.patch('/todos/:id', (req, res) => {
+  var id = req.params.id;
+  var body = _.pick(req.body, ['text', 'completed']);
+
+  if(!ObjectID.isValid(id))
+    res.status(404).send('Id not valid');
+
+  if(_.isBoolean(body.completed) && body.completed) {
+    body.completedAt = new Date().getTime();
+  } else {
+    body.completed = false;
+    body.completedAt = null;
+  }
+
+  Todo.findByIdAndUpdate(id, {$set : body}, {new : true}).then((todo) => {
+    if(!todo)
+      res.status(404).send('nessun riscontro');
+
+    res.send({todo});
+  }).catch((e) => {
+    res.status(400).send('errore preso');
+  });
 });
 
 app.get('/file', (req, res) => {
@@ -85,3 +126,5 @@ app.listen(port, () => {
 
 
 module.exports = {app};
+
+// It all works but in the terminal gives me some strange errors
