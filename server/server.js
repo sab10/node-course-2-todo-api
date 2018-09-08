@@ -72,7 +72,6 @@ app.get('/todos/:id', (req, res) => {
     res.status(400).send();
   })
 
-
   //res.send(req.params);  // this command send back the id wrote in the link
 });
 
