@@ -1,3 +1,6 @@
+require('./config/config.js');
+
+
 const _ = require('lodash');
 
 var express = require('express'); // In this cases I can use const or var is the same
@@ -9,7 +12,7 @@ var {User} = require('./models/user.js');
 
 const {ObjectID} = require('mongodb');
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 //var newTodo = new Todo({
 //  text : 'Node project',
@@ -114,6 +117,26 @@ app.patch('/todos/:id', (req, res) => {
   }).catch((e) => {
     res.status(400).send('errore preso');
   });
+});
+
+app.post('/users', (req, res) => {
+  var body = _.pick(req.body, ['email', 'password']);
+  var user = new User(body);
+
+  user.save().then(() => {
+
+    //two typer of methods we will make in this course
+    //MODEL methods // are called in the User
+    //INSTANCE methods // are called in the user
+
+    return user.generateAuthToken();
+
+  }).then((token) => {
+    res.header('x-auth', token).send(user);
+  }).catch((e) => {
+    res.status(400).send(e);
+  });
+
 });
 
 app.get('/file', (req, res) => {
