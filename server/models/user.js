@@ -56,6 +56,29 @@ UserSchema.methods.generateAuthToken = function() {
   });
 };
 
+// use statics instead of methods is pretty much the same thing but everything that is statics turns into model methods , not instance
+// To understand this things better watch where I call these two methods in the server.js, .methods is called with user when .statics by User
+UserSchema.statics.findByToken = function (token) {
+  var User = this;
+  var decoded;
+
+  try {
+    decoded = jwt.verify(token, 'secret');
+  } catch(e) {
+    //return new Promise ((resolve, reject) => {
+    //  reject();
+    //});
+    // there is a faster way to write the reject
+    return Promise.reject();
+  }
+
+  return User.findOne({
+    _id : decoded._id,
+    'tokens.token' : token,
+    'tokens.access' : 'auth'
+  });
+};
+
 var User = mongoose.model('User', UserSchema);
 
 module.exports = {User};

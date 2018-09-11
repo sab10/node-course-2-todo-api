@@ -9,7 +9,7 @@ var data = {
 var token = jwt.sign(data, 'secret');
 console.log(token);
 
-var decoded = jwt.verify(token, 'secret');
+var decoded = jwt.verify(token, 'secret'); // this method should return the data and a variable in plus in a JSON
 console.log(decoded);
 
 //var message = 'I am user number 3';

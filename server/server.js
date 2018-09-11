@@ -9,6 +9,7 @@ var bodyParser = require('body-parser');
 var {mongoose} = require('./db/mongoose.js');
 var {Todo} = require('./models/todo.js');
 var {User} = require('./models/user.js');
+var {authenticate} = require('./middleware/authenticate.js');
 
 const {ObjectID} = require('mongodb');
 
@@ -136,7 +137,11 @@ app.post('/users', (req, res) => {
   }).catch((e) => {
     res.status(400).send(e);
   });
+});
 
+
+app.get('/users/me', authenticate, (req, res) => { // the name of the variable create the middleware so the method get will be exetucate only if the authenticare goes well
+  res.send(req.user);
 });
 
 app.get('/file', (req, res) => {
@@ -149,5 +154,3 @@ app.listen(port, () => {
 
 
 module.exports = {app};
-
-// It all works but in the terminal gives me some strange errors
