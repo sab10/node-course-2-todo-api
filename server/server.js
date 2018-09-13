@@ -140,9 +140,25 @@ app.post('/users', (req, res) => {
 });
 
 
+
 app.get('/users/me', authenticate, (req, res) => { // the name of the variable create the middleware so the method get will be exetucate only if the authenticare goes well
   res.send(req.user);
 });
+
+app.post('/users/login', (req, res) => {
+  var body = _.pick(req.body, ['email', 'password']);
+
+  User.findByCredentials(body.email, body.password).then((user) => {
+    user.generateAuthToken().then((token) => {
+      res.header('x-auth', token).send(user);
+    });
+  }).catch((e) => {
+    res.status(400).send();
+  });
+
+
+});
+
 
 app.get('/file', (req, res) => {
   res.download(__dirname+'/cazzeggio.txt'); // the download doesn't work if 1. the file is without something in it 2. if the file is in the path before che one where I am executing server.js for security issues

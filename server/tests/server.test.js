@@ -6,23 +6,27 @@ const {ObjectID} = require('mongodb');
 
 const {app} = require('./../server.js');
 const {Todo} = require('./../models/todo.js');
+const {todos, populateTodos,users, populateUsers} = require('./seed/seed.js');
+//------------------------------------------------------------------------------------------------------------------------- I moved this  two things inside seed.js
+//const todos = [{
+//  _id : new ObjectID(),
+//  text : 'First test to do'
+//}, {
+//  _id : new ObjectID(),
+//  text : 'Second test to do'
+//}];
 
-const todos = [{
-  _id : new ObjectID(),
-  text : 'First test to do'
-}, {
-  _id : new ObjectID(),
-  text : 'Second test to do'
-}];
-
-beforeEach((done) => { // the beforeEach methos executes automatically before every test case, and the test case will not be executed if the before each not work properly
-  Todo.deleteMany().then(() => { // this method cancel all the data in the collection before to add the new one, because in the next lines we check the first element of the collection and we want it to be the one we insert now and there is the check for todos.length to be 1 so only one alement can be in the table to pass the test
-    //done(); // before, when we was testing only post in this method was only this command
-    return Todo.insertMany(todos);
-  }).then(() => {
-    done();
-  });
-});
+//beforeEach((done) => { // the beforeEach methos executes automatically before every test case, and the test case will not be executed if the before each not work properly
+//  Todo.deleteMany().then(() => { // this method cancel all the data in the collection before to add the new one, because in the next lines we check the first element of the collection and we want it to be the one we insert now and there is the check for todos.length to be 1 so only one alement can be in the table to pass the test
+//    //done(); // before, when we was testing only post in this method was only this command
+//    return Todo.insertMany(todos);
+//  }).then(() => {
+//    done();
+//  });
+//});
+//-------------------------------------------------------------------------------------------------------------------------
+beforeEach(populateTodos);
+beforeEach(populateUsers);
 
 describe('POST /todos', () => {
   it('should create a new todo', (done) => {
@@ -88,6 +92,7 @@ describe('GET /todos', () => {
 });
 
 describe('GET /todos/:id', () => {
+  
   it('should get todos doc', (done) => {
     request(app)
     .get(`/todos/${todos[0]._id.toHexString()}`)
@@ -104,5 +109,19 @@ describe('GET /todos/:id', () => {
   //  .get(`/todos/${hexID}`)
   //  .expect(404)
   //  .end(done());
-  //});
+//});
 });
+
+describe ('GET /users/me', () => {
+  it('should return user if authenticated', (done) => {
+    request(app)
+    .get('/users/me')
+    .set('x-auth', users[0].tokens[0].token)
+    .expect(200)
+    .expect((res) => {
+      expect(res.body._id).toBe(users[0]._id.toHexString());
+      expect(res.body.email).toBe(users[0].email);
+    })
+    .end(done()); // this method make the same error of the two tests before, a loop
+  });
+})
