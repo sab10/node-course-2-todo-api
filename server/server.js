@@ -142,7 +142,7 @@ app.post('/users', (req, res) => {
 
 
 app.get('/users/me', authenticate, (req, res) => { // the name of the variable create the middleware so the method get will be exetucate only if the authenticare goes well
-  res.send(req.user);
+  res.send('You are logged in yet');
 });
 
 app.post('/users/login', (req, res) => {
@@ -155,8 +155,14 @@ app.post('/users/login', (req, res) => {
   }).catch((e) => {
     res.status(400).send();
   });
+});
 
-
+app.delete('/users/me/token', authenticate, (req, res) => {
+  req.user.removeToken(req.token).then(() => {
+    res.status(200).send('tokens deleted, user logged out');
+  }, () => {
+    res.status(400).send();
+  });
 });
 
 
